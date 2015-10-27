@@ -1,30 +1,43 @@
 define(function () {
 	class Communicate {
-		constructor(ws, options) {
+		constructor(ws, options = {}) {
 			this._source = ws
-			this._taskId = 0       // task ID, auto increase, never same in a Communicate instance
-			this._source = options.source  // which to post message to
-			this._domain = options.domain  // domain rule specify who can been sent
-			this._handlers = {}
+			this._taskId = 0  // task ID, auto increase, never same in a Communicate instance
 			this._onPreResponse = options.onPreResponse
 			this._onPreRequest = options.onPreRequest
-
-
 		}
 
-		send(method, params, callback) {
+		// multiplyResponse: true
+		send(method, params, options = {multiplyResponse: false}, callback = undefined) {
+			if (typeof options == 'function') {
+				callback = options
+				options = {multiplyResponse: false}
+			}
 			var reqData = {
-				id  : this._taskId++,
-				type: method,
-				data: params
+				id    : this._taskId++,
+				type  : method,
+				params: params
+			}
+
+			if (this._onPreRequest) {
+				this._onPreRequest(reqData)
 			}
 
 			if (callback) {
 				this._source.addEventListener('message', function onMessage(e) {
 					var resData = JSON.parse(e.data)
+
+					if (this._onPreResponse) {
+						resData = this._onPreResponse(resData)
+					}
+
 					if (resData.id == reqData.id) {
-						this._source.removeEventListener('message', onMessage) // only need to execute once
-						callback(resData.data)
+						if (!options.multiplyResponse) {
+							this._source.removeEventListener('message', onMessage) // only need to execute once
+						}
+						delete resData.id
+
+						callback(resData)
 					}
 				}.bind(this))
 			}
