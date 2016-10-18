@@ -1,7 +1,8 @@
 const Client = require('../lib/index')
 const MockServer = require('mock-socket/dist/main').Server
 const MockClient = require('mock-socket/dist/main').WebSocket;
-QUnit.module('Communicate')
+
+QUnit.module('RPCWebsocketClient')
 
 window.WebSocket = MockClient
 
