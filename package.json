@@ -1,0 +1,11 @@
+{
+  "name": "rpc-websocket-client",
+  "version": "0.0.0-dev",
+  "license": "MIT",
+  "devDependencies": {
+    "cjs": "github:valaxy/cjs#e3fb03abf7ed5e58adf0e54dfec01bf4bf65bd2e",
+    "mock-socket": "^5.0.1",
+    "qunitjs": "^2.0.1",
+    "requirejs": "^2.3.2"
+  }
+}
