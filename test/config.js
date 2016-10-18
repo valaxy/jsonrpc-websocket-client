@@ -1,6 +1,13 @@
 requirejs.config({
 	baseUrl: '../',
 	paths  : {
-		'mock-socket': 'bower_components/mock-socket/dist/mock-socket'
+		'amd-loader' : 'node_modules/amd-loader/amd-loader',
+		'cjs'        : 'node_modules/cjs/cjs',
+		'mock-socket': 'node_modules/mock-socket/'
+	},
+	cjs    : {
+		cjsPaths: [
+			'mock-socket'
+		]
 	}
 })
