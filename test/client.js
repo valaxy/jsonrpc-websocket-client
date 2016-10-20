@@ -16,12 +16,15 @@ let createStandardServer = function (port) {
 
 
 QUnit.test('client request and callback', (assert) => {
-	let async = assert.async()
+	let done = assert.async()
 	createStandardServer(1000)
 	let client = new Client(new WebSocket('ws://localhost:1000'))
 	client.send('test').then(({data}) => {
 		assert.equal(data, `echo: test`)
-		async()
+		return client.send({tt: 'tt'})
+	}).then(({data}) => {
+		assert.equal(data, `echo: {"tt":"tt"}`)
+		done()
 	})
 })
 

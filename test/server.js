@@ -5,7 +5,7 @@ const MockClient = require('mock-socket/dist/main').WebSocket;
 QUnit.module('RPCWebSocketServer')
 
 
-QUnit.test('server request', assert => {
+QUnit.test('server request and callback', assert => {
 	let done = assert.async()
 	let server = new Server(new MockServer(`ws://localhost:2000`))
 	let client = new MockClient('ws://localhost:2000')
@@ -13,8 +13,11 @@ QUnit.test('server request', assert => {
 		client.send(`echo: ${data}`)
 	})
 
-	server.send('tt').then((data) => {
-		assert.equal(data, 'echo: tt')
+	server.send('t1').then((data) => {
+		assert.equal(data, 'echo: t1')
+		return server.send({tt: 'tt'})
+	}).then(data => {
+		assert.equal(data, 'echo: {"tt":"tt"}')
 		done()
 	})
 })
