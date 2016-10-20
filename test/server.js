@@ -5,53 +5,66 @@ const MockClient = require('mock-socket/dist/main').WebSocket;
 QUnit.module('RPCWebSocketServer')
 
 
-QUnit.test('server request and callback', assert => {
+QUnit.test('request()', assert => {
 	let done = assert.async()
 	let server = new Server(new MockServer(`ws://localhost:2000`))
 	let client = new MockClient('ws://localhost:2000')
 	client.addEventListener('message', ({data}) => {
-		client.send(`echo: ${data}`)
+		client.send(JSON.stringify({echo: JSON.parse(data)}))
 	})
 
-	server.send('t1').then((data) => {
-		assert.equal(data, 'echo: t1')
-		return server.send({tt: 'tt'})
+	server.request({tt: 't1'}).then(data => {
+		assert.deepEqual(data, {echo: {tt: 't1'}})
+		return server.request({tt: 't2'})
 	}).then(data => {
-		assert.equal(data, 'echo: {"tt":"tt"}')
+		assert.deepEqual(data, {echo: {tt: 't2'}})
 		done()
 	})
 })
 
-
-QUnit.test('server response', assert => {
+QUnit.test('send()', assert => {
 	let done = assert.async()
 	let server = new Server(new MockServer(`ws://localhost:2001`))
 	let client = new MockClient('ws://localhost:2001')
-	server.on((data) => {
-		assert.equal(data, 'tt')
+	client.addEventListener('message', ({data}) => {
+		assert.equal(data, '{"a":1}')
 		done()
 	})
 
-	client.send('tt')
+	server.send({a: 1})
 })
 
-QUnit.test('server request and response', assert => {
+
+QUnit.test('on', assert => {
 	let done = assert.async()
 	let server = new Server(new MockServer(`ws://localhost:2002`))
 	let client = new MockClient('ws://localhost:2002')
+	server.on(data => {
+		assert.deepEqual(data, {tt: 1})
+		done()
+	})
+
+	client.send(JSON.stringify({tt: 1}))
+})
+
+QUnit.test('request and send', assert => {
+	let done = assert.async()
+	let server = new Server(new MockServer(`ws://localhost:2003`))
+	let client = new MockClient('ws://localhost:2003')
 
 	server.on((data) => {
-		assert.equal(data, 't2')
+		assert.deepEqual(data, {value: 55})
 		done()
 	})
 
 	client.addEventListener('message', ({data}) => {
-		client.send(`echo: ${data}`)
+		data = JSON.parse(data)
+		data.value += 1
+		client.send(JSON.stringify(data))
 	})
 
-	server.send('t1').then(data => {
-		assert.equal(data, 'echo: t1')
-
-		client.send('t2')
+	server.request({value: 12}).then(data => {
+		assert.deepEqual(data, {value: 13})
+		client.send(JSON.stringify({value: 55}))
 	})
 })
