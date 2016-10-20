@@ -1,4 +1,5 @@
-[![dependencies Status](https://david-dm.org/valaxy/rpc-websocket-client/status.svg?style=flat-square)](https://david-dm.org/valaxy/rpc-websocket-client)
+[![dependencies Status](https://david-dm.org/valaxy/rpc-websocket/status.svg?style=flat-square)](https://david-dm.org/valaxy/rpc-websocket)
+[![devDependencies Status](https://david-dm.org/valaxy/rpc-websocket/dev-status.svg?style=flat-square)](https://david-dm.org/valaxy/rpc-websocket?type=dev)
 
 RPC WebSocket comply 2 rules: 
 - one request one response(for client and server)
